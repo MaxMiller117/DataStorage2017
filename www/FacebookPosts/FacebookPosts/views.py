@@ -10,7 +10,7 @@ def index():
 @app.route('/query')
 def query():
 
-    conn_string = "host='localhost' dbname='mydb' user='dgillman' password='rufus'"
+    conn_string = "host='localhost' dbname='postgres' user='postgres' password='rufus'"
     conn = psycopg2.connect(conn_string)
     cursor = conn.cursor()
     cursor.execute("select * from stations;")
