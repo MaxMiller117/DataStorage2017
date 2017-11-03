@@ -1,0 +1,13 @@
+Here are links to prototype views, done in Tableau:
+
+Home:
+
+https://public.tableau.com/views/FacebookRemovedPages/EyeballDashboard?:embed=y&:display_count=yes
+
+When interactions happened:
+
+https://public.tableau.com/views/FacebookRemovedPagesWhen/WHEN-Interactions?:embed=y&:display_count=yes
+
+Top Posts:
+
+https://public.tableau.com/views/FacebookRemovedPagesTopPosts/TopPosts?:embed=y&:display_count=yes 
