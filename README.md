@@ -1,3 +1,9 @@
+Requirements:
+postgresql
+python2
+matplotlib
+
+
 # README
 
 Create a branch of this repo for your project.
