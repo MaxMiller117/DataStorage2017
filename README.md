@@ -3,6 +3,8 @@ postgresql
 python2
 matplotlib
 
+How to run:
+python theapp.py
 
 # README
 
