@@ -10,11 +10,14 @@ def simple():
     from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
     from matplotlib.figure import Figure
     from matplotlib.dates import DateFormatter
+    from matplotlib.axes import Axes
 
     fig=Figure()
     ax=fig.add_subplot(111)
     x=[]
     y=[]
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Amount')
     now=datetime.datetime.now()
     delta=datetime.timedelta(days=1)
     for i in range(10):
