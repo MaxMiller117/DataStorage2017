@@ -18,7 +18,7 @@ def weekly_followers(group="Blacktivist"):
     conn = psycopg2.connect("dbname=fb_data user=srive326")
     cur = conn.cursor()
 
-    query = """CREATE OR REPLACE FUNCTION source_percent_change(parm1 text)
+    query = """CREATE OR REPLACE FUNCTION page_percent_change(parm1 text)
       RETURNS TABLE (year double precision, weekly double precision, percent_change numeric)
     AS
     $body$
@@ -26,15 +26,15 @@ def weekly_followers(group="Blacktivist"):
         a.year,a.weekly, round(((cast(a.followers AS numeric) - cast(a.lag AS numeric))/ NULLIF(cast(a.lag AS numeric),0)) * 100,4) AS percent_change 
     FROM
     (
-        SELECT *,lag(followers) OVER (partition BY source) AS lag FROM followers_weekly
+        SELECT *,lag(followers) OVER (partition BY name) AS lag FROM followers_weekly
     )
-        AS a WHERE source = parm1;
+        AS a WHERE name = parm1;
     $body$
     language sql; """
     cur.execute(query)
 
     query = """
-    select year, weekly, percent_change from source_percent_change('%s')""" % group
+    select year, weekly, percent_change from page_percent_change('%s')""" % group
 
     cur.execute(query)
 
@@ -58,6 +58,7 @@ def weekly_followers(group="Blacktivist"):
     #ax.set_title()
     
     ax.plot(weeks_from_start, percent_changes)
+    ax.set_title(group)
     #ax.xaxis.set_major_formatter(DateFormatter('%Y-%m-%d'))
     #fig.autofmt_xdate()
     canvas=FigureCanvas(fig)
