@@ -34,7 +34,7 @@ def weekly_followers(group="Blacktivist"):
     cur.execute(query)
 
     query = """
-    select year, weekly, percent_change from source_percent_change(%s)""" % group
+    select year, weekly, percent_change from source_percent_change('%s')""" % group
 
     cur.execute(query)
 
