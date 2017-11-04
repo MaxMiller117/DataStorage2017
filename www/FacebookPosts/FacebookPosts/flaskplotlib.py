@@ -2,7 +2,8 @@ from flask import Flask, make_response
 app = Flask(__name__)
 
 @app.route("/weekly_followers.png")
-def weekly_followers():
+@app.route("/weekly_followers.png/<group>")
+def weekly_followers(group="Blacktivist"):
     import datetime
     import StringIO
     import random
@@ -33,7 +34,7 @@ def weekly_followers():
     cur.execute(query)
 
     query = """
-    select year, weekly, percent_change from source_percent_change('Blacktivist')"""
+    select year, weekly, percent_change from source_percent_change(%s)""" % group
 
     cur.execute(query)
 
