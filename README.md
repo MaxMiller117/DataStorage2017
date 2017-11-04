@@ -2,6 +2,7 @@ Requirements:
 postgresql
 python2
 matplotlib
+flask
 
 How to run:
 python theapp.py

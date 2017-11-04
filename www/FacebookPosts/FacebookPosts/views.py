@@ -18,6 +18,13 @@ def query():
 
     return str(records)
 
-@app.route('/home')
-def home():
+@app.route('/home', methods=['GET', 'POST'])
+@app.route('/home/<name>')
+def home(name=None):
+    if(name!=None):
+	return '<h1>'+name+'</h1>'
     return render_template("home.html")
+
+@app.route('/sample')
+def sample():
+    return render_template("sample.html")
