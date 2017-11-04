@@ -31,7 +31,7 @@ id serial primary key,
 name varchar,
 url varchar);
 
-INSERT INTO pages(name, url) SELECT source, page_url FROM fb_data GROUP BY source, page_url;
+INSERT INTO pages(name, url) SELECT reverse(split_part(reverse(page_url), '/', 1)), page_url FROM fb_data GROUP BY page_url;
 
 
 -- create page_followers table to track followers for pages over time
@@ -43,11 +43,11 @@ followers integer,
 time_zone varchar
 );
 
-INSERT INTO page_followers(page_id, followers, "date", "time", time_zone) SELECT p.id, fb.followers::integer, fb."date", fb."time", fb.time_zone FROM fb_data AS fb, pages AS p WHERE fb.source = p.name AND fb.page_url = p.url;
+INSERT INTO page_followers(page_id, followers, "date", "time", time_zone) SELECT p.id, fb.followers::integer, fb."date", fb."time", fb.time_zone FROM fb_data AS fb, pages AS p WHERE fb.page_url = p.url;
 
 
 -- create posts table describing specific posts to various facebook pages
-CREATE TABLE posts AS SELECT fb.id AS id, p.id AS page_id, "date", "time", time_zone, interactions, post_message, post_link FROM fb_data AS fb INNER JOIN pages AS p ON (fb.source = p.name AND fb.page_url = p.url);
+CREATE TABLE posts AS SELECT fb.id AS id, p.id AS page_id, "date", "time", time_zone, interactions, post_message, post_link FROM fb_data AS fb INNER JOIN pages AS p ON (fb.page_url = p.url);
 
 --ALTER TABLE posts ADD COLUMN page_id integer; 
 ALTER TABLE posts ADD CONSTRAINT fk_page_id FOREIGN KEY(page_id) REFERENCES pages(id);
@@ -57,8 +57,8 @@ ALTER TABLE posts ALTER COLUMN id SET DATA TYPE integer USING (id::integer);
 ALTER TABLE posts ADD CONSTRAINT pk_id PRIMARY KEY(id);
 
 --sql to make table with followers by week
-CREATE TABLE followers_weekly AS SELECT name AS source, max(followers) AS followers, date_part('year', "date"::date) AS year,
+CREATE TABLE followers_weekly AS SELECT name, max(followers) AS followers, date_part('year', "date"::date) AS year,
 	date_part('week', "date"::date) AS weekly
 	FROM page_followers INNER JOIN pages ON (page_followers.page_id = pages.id)
-	GROUP BY source, year, weekly
-	ORDER BY source, year, weekly;
+	GROUP BY name, year, weekly
+	ORDER BY name, year, weekly;
