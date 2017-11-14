@@ -3,7 +3,7 @@ app = Flask(__name__)
 
 @app.route("/weekly_followers.png")
 @app.route("/weekly_followers.png/<group>")
-def weekly_followers(group="Blacktivist"):
+def weekly_followers(group="Blacktivists"):
     import datetime
     import StringIO
     import random
@@ -34,7 +34,7 @@ def weekly_followers(group="Blacktivist"):
     cur.execute(query)
 
     query = """
-    select year, weekly, percent_change from page_percent_change('%s')""" % group
+    select year, weekly, percent_change from page_percent_change('%s');""" % group
 
     cur.execute(query)
 
@@ -69,7 +69,7 @@ def weekly_followers(group="Blacktivist"):
     return response
 
 @app.route("/activity_by_time_of_day.png/<group>")
-def activity_by_time_of_day(group="Blacktivist"):
+def activity_by_time_of_day(group="Blacktivists"):
     import datetime
     import StringIO
     import random
@@ -80,13 +80,41 @@ def activity_by_time_of_day(group="Blacktivist"):
     from matplotlib.axes import Axes
     import psycopg2
 
+    NUM_HOURS = 24 # avoiding magic numbers, maybe this code will one day run on other planets?
+
     conn = psycopg2.connect("dbname=fb_data user=njohnson")
     cur = conn.cursor()
+    
+    query = """SELECT time, interactions FROM posts WHERE page_id = (SELECT id FROM pages WHERE name = '%s');""" % group
 
-    query = """ """
     cur.execute(query)
 
     data = cur.fetchall()
+
+    # Grab lists of data
+    times, interactions = zip(*data)
+
+    # Construct bins of total interactions across the hours each time occurs in (from 00 to 23)
+    interactions_per_hour = dict.fromkeys(range(NUM_HOURS),0)
+    for time in times:
+        hour = int(time[:2])
+        interactions_per_hour[hour] = interactions_per_hour.get(hour, 0) + 1
+
+    fig=Figure()
+    ax=fig.add_subplot(111)
+    ax.set_xlabel('Time of Day')
+    ax.set_ylabel('Interactions')
+
+    ax.bar(interactions_per_hour.keys(), interactions_per_hour.values())
+    ax.set_title(group)
+
+    canvas = FigureCanvas(fig)
+    png_output = StringIO.StringIO()
+    canvas.print_png(png_output)
+    response = make_response(png_output.getvalue())
+    response.headers['Content-Type'] = 'image/png'
+    return response
+
 
 
 if __name__ == "__main__":
