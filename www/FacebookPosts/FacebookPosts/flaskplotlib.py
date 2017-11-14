@@ -15,7 +15,7 @@ def weekly_followers(group="Blacktivist"):
     import psycopg2
 
 
-    conn = psycopg2.connect("dbname=fb_data user=srive326")
+    conn = psycopg2.connect("dbname=fb_data user=njohnson")
     cur = conn.cursor()
 
     query = """CREATE OR REPLACE FUNCTION page_percent_change(parm1 text)
@@ -67,6 +67,26 @@ def weekly_followers(group="Blacktivist"):
     response=make_response(png_output.getvalue())
     response.headers['Content-Type'] = 'image/png'
     return response
+
+@app.route("/activity_by_time_of_day.png/<group>")
+def activity_by_time_of_day(group="Blacktivist"):
+    import datetime
+    import StringIO
+    import random
+
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+    from matplotlib.figure import Figure
+    from matplotlib.dates import DateFormatter
+    from matplotlib.axes import Axes
+    import psycopg2
+
+    conn = psycopg2.connect("dbname=fb_data user=njohnson")
+    cur = conn.cursor()
+
+    query = """ """
+    cur.execute(query)
+
+    data = cur.fetchall()
 
 
 if __name__ == "__main__":
