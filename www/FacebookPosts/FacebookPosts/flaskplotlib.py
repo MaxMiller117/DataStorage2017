@@ -1,6 +1,9 @@
 from flask import Flask, make_response
 app = Flask(__name__)
 
+
+DB_USER = "noah"
+
 @app.route("/weekly_followers.png")
 @app.route("/weekly_followers.png/<group>")
 def weekly_followers(group="Blacktivists"):
@@ -15,7 +18,7 @@ def weekly_followers(group="Blacktivists"):
     import psycopg2
 
 
-    conn = psycopg2.connect("dbname=fb_data user=njohnson")
+    conn = psycopg2.connect("dbname=fb_data user=%s" % DB_USER)
     cur = conn.cursor()
 
     query = """CREATE OR REPLACE FUNCTION page_percent_change(parm1 text)
@@ -70,7 +73,6 @@ def weekly_followers(group="Blacktivists"):
 
 @app.route("/activity_by_time_of_day.png/<group>")
 def activity_by_time_of_day(group="Blacktivists"):
-    import datetime
     import StringIO
     import random
 
@@ -82,7 +84,7 @@ def activity_by_time_of_day(group="Blacktivists"):
 
     NUM_HOURS = 24 # avoiding magic numbers, maybe this code will one day run on other planets?
 
-    conn = psycopg2.connect("dbname=fb_data user=njohnson")
+    conn = psycopg2.connect("dbname=fb_data user=%s" % DB_USER)
     cur = conn.cursor()
     
     query = """SELECT time, interactions FROM posts WHERE page_id = (SELECT id FROM pages WHERE name = '%s');""" % group
@@ -96,13 +98,13 @@ def activity_by_time_of_day(group="Blacktivists"):
 
     # Construct bins of total interactions across the hours each time occurs in (from 00 to 23)
     interactions_per_hour = dict.fromkeys(range(NUM_HOURS),0)
-    for time in times:
-        hour = int(time[:2])
+    for t in times:
+        hour = int(t.hour)
         interactions_per_hour[hour] = interactions_per_hour.get(hour, 0) + 1
 
     fig=Figure()
     ax=fig.add_subplot(111)
-    ax.set_xlabel('Time of Day')
+    ax.set_xlabel('Hour')
     ax.set_ylabel('Interactions')
 
     ax.bar(interactions_per_hour.keys(), interactions_per_hour.values())

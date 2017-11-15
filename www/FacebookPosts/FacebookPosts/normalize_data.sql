@@ -21,7 +21,7 @@ post_link varchar
 );
 
 -- load unnormalized data from csv
-\copy fb_data from '/Users/srive326/Desktop/facebook_pages_moved.csv' with CSV HEADER
+\copy fb_data from './facebook_pages_moved.csv' with CSV HEADER
 
 -- Now start creating normalized tables
 
